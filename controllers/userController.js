@@ -83,4 +83,20 @@ const getUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getUser };
+const searchUser = async (req, res) => {
+  const query = req.query.q;
+  try {
+    const users = await User.find({
+      name: { $regex: String(query), $options: "i" }, // partial & case-insensitive
+    });
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error!" });
+  }
+};
+
+export { registerUser, loginUser, getUser, searchUser };
